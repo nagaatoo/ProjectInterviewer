@@ -34,6 +34,7 @@ public class DiffCommitCacheService {
 
         switch (message.event()) {
             case DO_DIFF -> saveDiff(interviewId, message);
+            case FINISH_INTERVIEW -> finishInterview(interviewId);
             case null -> System.out.println("Null event");
             default -> sendMessage(interviewId, message);
         }
@@ -83,5 +84,9 @@ public class DiffCommitCacheService {
                 rows.put(rowIdx, value);
             }
         });
+    }
+
+    private void finishInterview(UUID interviewId) {
+        hazelcastInstance.getMap(interviewId.toString()).destroy();
     }
 }

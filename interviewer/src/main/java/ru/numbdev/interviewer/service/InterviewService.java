@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
-import ru.numbdev.interviewer.dto.ElementValues;
+import ru.numbDev.common.dto.ElementValues;
 
 public interface InterviewService {
 

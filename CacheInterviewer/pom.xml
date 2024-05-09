@@ -15,8 +15,13 @@
 	<description>CacheInterviewer</description>
 	<properties>
 		<java.version>21</java.version>
+		<skipTests>true</skipTests>
 	</properties>
 	<dependencies>
+		<dependency>
+			<groupId>ru.numbDev</groupId>
+			<artifactId>CommonInterviewer</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-actuator</artifactId>
@@ -34,6 +39,23 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.hazelcast</groupId>
+			<artifactId>hazelcast-spring</artifactId>
+			<version>5.3.2</version>
+		</dependency>
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<optional>true</optional>
+			<version>1.18.30</version>
+		</dependency>
+		<dependency>
+			<groupId>ru.numbDev</groupId>
+			<artifactId>CommonInterviewer</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+			<scope>compile</scope>
 		</dependency>
 	</dependencies>
 

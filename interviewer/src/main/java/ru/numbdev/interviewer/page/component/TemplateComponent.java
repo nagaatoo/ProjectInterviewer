@@ -10,7 +10,7 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
-import ru.numbdev.interviewer.dto.ElementValues;
+import ru.numbDev.common.dto.ElementValues;
 import ru.numbdev.interviewer.jpa.entity.TemplateEntity;
 import ru.numbdev.interviewer.enums.BuilderType;
 import ru.numbdev.interviewer.page.component.abstracts.AbstractBuilderListComponent;

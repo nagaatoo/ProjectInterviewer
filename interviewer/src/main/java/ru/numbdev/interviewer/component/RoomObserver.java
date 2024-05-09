@@ -1,6 +1,6 @@
 package ru.numbdev.interviewer.component;
 
-import ru.numbdev.interviewer.dto.Message;
+import ru.numbDev.common.dto.Message;
 import ru.numbdev.interviewer.page.component.abstracts.CustomComponent;
 
 import java.util.UUID;

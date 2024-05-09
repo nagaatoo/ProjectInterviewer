@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import ru.numbdev.interviewer.dto.ElementValues;
+import ru.numbDev.common.dto.ElementValues;
 import ru.numbdev.interviewer.jpa.entity.InterviewEntity;
 
 public interface HistoryService {

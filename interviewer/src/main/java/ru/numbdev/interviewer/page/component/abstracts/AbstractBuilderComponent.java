@@ -2,8 +2,8 @@ package ru.numbdev.interviewer.page.component.abstracts;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import ru.numbdev.interviewer.dto.ElementValues;
-import ru.numbdev.interviewer.jpa.entity.ElementType;
+import ru.numbDev.common.dto.ElementValues;
+import ru.numbDev.common.enums.ElementType;
 import ru.numbdev.interviewer.page.component.CustomEditor;
 import ru.numbdev.interviewer.page.component.CustomRadioButtonsGroup;
 import ru.numbdev.interviewer.page.component.CustomTextArea;

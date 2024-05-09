@@ -1,0 +1,27 @@
+spring:
+  application:
+    name: Cache Interviewer
+  kafka:
+    topic-read: interview-write
+    topic-write: interview-read
+    consumer:
+      bootstrap-servers: localhost:29092
+      group-id: ${random.uuid}
+      auto-offset-reset: latest
+      key-deserializer: org.apache.kafka.common.serialization.UUIDDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring:
+          json:
+            trusted:
+              packages: '*'
+    producer:
+      bootstrap-servers: localhost:29092
+      key-serializer: org.apache.kafka.common.serialization.UUIDSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    #      transaction-id-prefix: tx-
+    streams:
+      replication-factor: 1
+  hazelcast:
+    cluster-name: dev
+    address: localhost:5701

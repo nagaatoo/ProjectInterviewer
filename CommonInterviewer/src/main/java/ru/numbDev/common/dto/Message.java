@@ -1,9 +1,9 @@
-package ru.numbdev.interviewer.dto;
-
-import ru.numbdev.interviewer.enums.EventType;
+package ru.numbDev.common.dto;
 
 import java.util.Map;
 import java.util.UUID;
+
+import ru.numbDev.common.enums.EventType;
 
 public record Message(
         UUID roomId,

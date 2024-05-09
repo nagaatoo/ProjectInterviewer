@@ -7,6 +7,7 @@ import org.hibernate.annotations.JdbcType;
 import org.hibernate.dialect.PostgreSQLEnumJdbcType;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import ru.numbDev.common.enums.ElementType;
 
 import java.time.LocalDateTime;
 import java.util.UUID;

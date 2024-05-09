@@ -10,7 +10,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import ru.numbdev.interviewer.dto.ElementValues;
+import ru.numbDev.common.dto.ElementValues;
 import ru.numbdev.interviewer.enums.BuilderType;
 import ru.numbdev.interviewer.enums.QuestionComponentType;
 import ru.numbdev.interviewer.jpa.entity.QuestionnaireEntity;

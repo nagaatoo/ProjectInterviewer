@@ -30,7 +30,8 @@ spring:
     default-schema: public
 
   kafka:
-    topic: interview
+    topic-read: interview-read
+    topic-write: interview-write
     consumer:
       bootstrap-servers: localhost:29092
       group-id: ${random.uuid}
@@ -53,3 +54,5 @@ spring:
   hazelcast:
     cluster-name: dev
     address: localhost:5701
+  application:
+    name: Interviewer

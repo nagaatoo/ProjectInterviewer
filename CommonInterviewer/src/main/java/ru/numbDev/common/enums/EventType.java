@@ -1,4 +1,4 @@
-package ru.numbdev.interviewer.enums;
+package ru.numbDev.common.enums;
 
 public enum EventType {
     START_INTERVIEW,

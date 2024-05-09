@@ -3,7 +3,7 @@ package ru.numbdev.interviewer.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.numbdev.interviewer.dto.ElementValues;
+import ru.numbDev.common.dto.ElementValues;
 import ru.numbdev.interviewer.jpa.entity.InterviewEntity;
 import ru.numbdev.interviewer.jpa.entity.RoomEntity;
 import ru.numbdev.interviewer.service.crud.*;

@@ -3,7 +3,6 @@ package ru.numbdev.interviewer.service.crud;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.numbdev.interviewer.dto.ElementValues;
 import ru.numbdev.interviewer.jpa.entity.HistoryBuilderItemEntity;
 import ru.numbdev.interviewer.jpa.repository.HistoryBuilderItemRepository;
 

@@ -1,8 +1,8 @@
-package ru.numbdev.interviewer.dto;
+package ru.numbDev.common.dto;
 
 import java.time.LocalDateTime;
 
-import ru.numbdev.interviewer.jpa.entity.ElementType;
+import ru.numbDev.common.enums.ElementType;
 
 public record ElementValues(
         String id,

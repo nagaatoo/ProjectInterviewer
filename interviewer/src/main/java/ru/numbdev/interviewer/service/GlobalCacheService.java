@@ -1,8 +1,8 @@
 package ru.numbdev.interviewer.service;
 
+import ru.numbDev.common.dto.ElementValues;
+import ru.numbDev.common.enums.EventType;
 import ru.numbdev.interviewer.component.RoomObserver;
-import ru.numbdev.interviewer.dto.ElementValues;
-import ru.numbdev.interviewer.enums.EventType;
 
 import java.util.Map;
 import java.util.UUID;

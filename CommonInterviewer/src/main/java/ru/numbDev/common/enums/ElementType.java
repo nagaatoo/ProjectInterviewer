@@ -1,9 +1,9 @@
-package ru.numbdev.interviewer.jpa.entity;
-
-import lombok.Getter;
+package ru.numbDev.common.enums;
 
 import java.util.Arrays;
 import java.util.List;
+
+import lombok.Getter;
 
 public enum ElementType {
     QUESTION("Тест"),

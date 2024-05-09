@@ -9,10 +9,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
+import ru.numbDev.common.dto.ElementValues;
+import ru.numbDev.common.enums.EventType;
 import ru.numbdev.interviewer.component.RoomObserver;
-import ru.numbdev.interviewer.dto.ElementValues;
-import ru.numbdev.interviewer.dto.Message;
-import ru.numbdev.interviewer.enums.EventType;
+import ru.numbDev.common.dto.Message;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -28,8 +28,8 @@ public class GlobalCacheServiceImpl implements GlobalCacheService {
     private static final Lock offerInterviewLock = new ReentrantLock();
     private static final Lock offerDiffLock = new ReentrantLock();
 
-    @Value("${spring.kafka.topic}")
-    private String topic;
+    @Value("${spring.kafka.topic-write}")
+    private String topicForWrite;
 
     private final KafkaTemplate<UUID, Message> kafkaTemplate;
     private final HazelcastInstance hazelcastInstance;
@@ -73,7 +73,7 @@ public class GlobalCacheServiceImpl implements GlobalCacheService {
 
     @Override
     public void offerEvent(UUID interviewId, UUID roomId, EventType type) {
-        kafkaTemplate.send(topic, interviewId, new Message(
+        kafkaTemplate.send(topicForWrite, interviewId, new Message(
                 roomId,
                 type,
                 null,
@@ -86,7 +86,7 @@ public class GlobalCacheServiceImpl implements GlobalCacheService {
         var elements = hazelcastInstance.getMap(interviewId.toString());
         elements.put(isChange ? elements.size() - 1 : elements.size(), value);
 
-        kafkaTemplate.send(topic, interviewId, new Message(
+        kafkaTemplate.send(topicForWrite, interviewId, new Message(
                 roomId,
                 isChange ? EventType.CHANGE_LAST_COMPONENT : EventType.ADD_COMPONENT,
                 value,
@@ -105,7 +105,7 @@ public class GlobalCacheServiceImpl implements GlobalCacheService {
                     .filter(es -> ((ElementValues) es.getValue()).id().equals(elementId.toString()))
                     .map(es -> (ElementValues) es.getValue())
                     .findFirst();
-            targetOptional.ifPresent(elementValues -> kafkaTemplate.send(topic, interviewId, new Message(
+            targetOptional.ifPresent(elementValues -> kafkaTemplate.send(topicForWrite, interviewId, new Message(
                     roomId,
                     EventType.DO_DIFF,
                     elementValues,
@@ -117,7 +117,7 @@ public class GlobalCacheServiceImpl implements GlobalCacheService {
     }
 
     // TODO может быть лаг между инициализации страницы, сборки кеша и получением diff
-    @KafkaListener(topics = "${spring.kafka.topic}")
+    @KafkaListener(topics = "${spring.kafka.topic-read}")
     private void listen(ConsumerRecord<UUID, Message> record) {
         var interviewId = record.key();
         var message = record.value();

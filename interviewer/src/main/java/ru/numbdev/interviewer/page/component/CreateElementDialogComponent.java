@@ -14,8 +14,8 @@ import de.f0rce.ace.AceEditor;
 import de.f0rce.ace.enums.AceMode;
 import de.f0rce.ace.enums.AceTheme;
 import de.f0rce.ace.util.AceCursorPosition;
-import ru.numbdev.interviewer.dto.ElementValues;
-import ru.numbdev.interviewer.jpa.entity.ElementType;
+import ru.numbDev.common.dto.ElementValues;
+import ru.numbDev.common.enums.ElementType;
 import ru.numbdev.interviewer.page.component.abstracts.AbstractBuilderListComponent;
 
 import java.util.List;

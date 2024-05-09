@@ -5,6 +5,7 @@ import de.f0rce.ace.enums.AceMode;
 import de.f0rce.ace.enums.AceTheme;
 import io.micrometer.common.util.StringUtils;
 import org.springframework.util.CollectionUtils;
+import ru.numbDev.common.constant.ValueConstants;
 import ru.numbdev.interviewer.page.component.abstracts.EditableComponent;
 
 import java.util.AbstractMap;
@@ -18,8 +19,6 @@ import java.util.stream.Collectors;
 
 public class CustomEditor extends AceEditor implements EditableComponent {
 
-    private static final String SPLIT = "\n";
-    private static final String NULL_ROW_TAG = "#<NULL_STR>#";
     private final Map<Integer, String> rows = new ConcurrentHashMap<>();
     private final Lock lock = new ReentrantLock();
 
@@ -81,7 +80,7 @@ public class CustomEditor extends AceEditor implements EditableComponent {
                         .keySet()
                         .stream()
                         .filter(s -> !actualRows.containsKey(s))
-                        .collect(Collectors.toMap(s -> s, s -> NULL_ROW_TAG));
+                        .collect(Collectors.toMap(s -> s, s -> ValueConstants.NULL_ROW_TAG));
 
                 var diff = rows
                         .entrySet()
@@ -94,14 +93,14 @@ public class CustomEditor extends AceEditor implements EditableComponent {
                             var row = actualRows.get(es.getKey());
 
                             return row == null
-                                    ? new AbstractMap.SimpleEntry<Integer, String>(es.getKey(), NULL_ROW_TAG)
+                                    ? new AbstractMap.SimpleEntry<Integer, String>(es.getKey(), ValueConstants.NULL_ROW_TAG)
                                     : new AbstractMap.SimpleEntry<>(es.getKey(), actualRows.get(es.getKey()));
                         })
                         .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
                 diff.putAll(emptyDiff);
                 diff.forEach((key, value) -> {
-                    if (NULL_ROW_TAG.equals(value)) {
+                    if (ValueConstants.NULL_ROW_TAG.equals(value)) {
                         rows.remove(key);
                     } else {
                         rows.put(key, value);
@@ -141,7 +140,7 @@ public class CustomEditor extends AceEditor implements EditableComponent {
 
     private void saveResult(Map<Integer, String> diff) {
         diff.forEach((rowIdx, value) -> {
-            if (NULL_ROW_TAG.equals(value)) {
+            if (ValueConstants.NULL_ROW_TAG.equals(value)) {
                 rows.remove(rowIdx);
             } else {
                 rows.put(rowIdx, value);
@@ -153,7 +152,7 @@ public class CustomEditor extends AceEditor implements EditableComponent {
         var currentRow = getCursorPosition().getRow();
         var currentCol = getCursorPosition().getColumn();
 
-        setValue(String.join(SPLIT, rows.values()));
+        setValue(String.join(ValueConstants.SPLIT, rows.values()));
         setCursorPosition(currentRow, currentCol, false);
     }
 

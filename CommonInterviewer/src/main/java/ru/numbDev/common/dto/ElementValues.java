@@ -19,4 +19,8 @@ public record ElementValues(
     ) {
         this(id, type, description, value, null);
     }
+
+    public ElementValues copyWithNewValue(String newValue) {
+        return new ElementValues(id, type, description, newValue, created);
+    }
 }

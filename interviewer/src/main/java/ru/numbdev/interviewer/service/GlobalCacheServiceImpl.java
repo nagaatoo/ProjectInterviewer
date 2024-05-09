@@ -38,9 +38,10 @@ public class GlobalCacheServiceImpl implements GlobalCacheService {
     public Map<Integer, ElementValues> offerInterview(UUID interviewId, RoomObserver room) {
         try {
             offerInterviewLock.lock();
+            Map<Integer, ElementValues> currentCache = hazelcastInstance.getMap(interviewId.toString());
             // Видимо, срабатывает для фоновых push - не регистрируем такие комнаты
             if (UI.getCurrent() == null) {
-                return Map.copyOf(hazelcastInstance.getMap(interviewId.toString()));
+                return Map.copyOf(currentCache);
             }
 
             if (!sessions.containsKey(interviewId)) {
@@ -49,7 +50,7 @@ public class GlobalCacheServiceImpl implements GlobalCacheService {
             var activeSessions = sessions.get(interviewId);
             activeSessions.put(UI.getCurrent().getSession(), room);
 
-            return Map.copyOf(hazelcastInstance.getMap(interviewId.toString()));
+            return Map.copyOf(currentCache);
         } finally {
             offerInterviewLock.unlock();
         }

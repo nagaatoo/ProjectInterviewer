@@ -6,7 +6,7 @@ spring:
     topic-write: interview-read
     consumer:
       bootstrap-servers: localhost:29092
-      group-id: ${random.uuid}
+      group-id: cache
       auto-offset-reset: latest
       key-deserializer: org.apache.kafka.common.serialization.UUIDDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer

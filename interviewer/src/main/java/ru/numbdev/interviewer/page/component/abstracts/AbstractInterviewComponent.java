@@ -229,6 +229,9 @@ public abstract class AbstractInterviewComponent extends AbstractBuilderComponen
             currentTaskComponent.changeTask(components.get(currentIdx));
 
             previewButton.setEnabled(true);
+        } else if (type == InterviewComponentInitType.CURRENT_ONLY) {
+            currentIdx = components.size() <= 1 ? 0 : components.size() - 1;
+            currentTaskComponent.changeTask(components.get(currentIdx));
         }
     }
 

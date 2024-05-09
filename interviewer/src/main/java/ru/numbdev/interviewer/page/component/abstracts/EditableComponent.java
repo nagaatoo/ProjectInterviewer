@@ -4,5 +4,5 @@ import java.util.Map;
 
 public interface EditableComponent extends CustomComponent {
     Map<Integer, String> getDiff(String actualState);
-    void offerDiff(Map<Integer, String> diff);
+    void offerDiff(Map<Integer, String> diff, long eventTime);
 }

@@ -300,7 +300,7 @@ public class RoomPage extends VerticalLayout implements BeforeEnterObserver, Roo
     }
 
     @Override
-    public void doAction(Message message) {
+    public void doAction(Message message, long eventTime) {
         switch (message.event()) {
             case START_INTERVIEW -> doStart();
             case FINISH_INTERVIEW -> doFinish();
@@ -308,7 +308,7 @@ public class RoomPage extends VerticalLayout implements BeforeEnterObserver, Roo
             case CHANGE_LAST_COMPONENT -> doChange(message.value());
             case NEXT_COMPONENT -> doNext();
             case PREVIOUS_COMPONENT -> doPreview();
-            case DO_DIFF -> doDiff(message);
+            case DO_DIFF -> doDiff(message, eventTime);
             case null, default -> System.out.println("Unknown type");
         }
     }
@@ -347,8 +347,8 @@ public class RoomPage extends VerticalLayout implements BeforeEnterObserver, Roo
         main.closeInterview();
     }
 
-    private void doDiff(Message message) {
-        main.offerDiff(UUID.fromString(message.value().id()), message.diffs());
+    private void doDiff(Message message, long eventTime) {
+        main.offerDiff(UUID.fromString(message.value().id()), message.diffs(), eventTime);
     }
 
     @Override

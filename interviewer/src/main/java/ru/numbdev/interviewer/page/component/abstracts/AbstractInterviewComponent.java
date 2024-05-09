@@ -196,12 +196,12 @@ public abstract class AbstractInterviewComponent extends AbstractBuilderComponen
         components.forEach(c -> ((CustomComponent) c).setReadOnlyMode());
     }
 
-    public void offerDiff(UUID elementId, Map<Integer, String> diff) {
+    public void offerDiff(UUID elementId, Map<Integer, String> diff, long eventTime) {
         components
                 .stream()
                 .filter(e -> UUID.fromString(e.getId().get()).equals(elementId))
                 .findFirst()
-                .ifPresent(e -> ((EditableComponent) e).offerDiff(diff));
+                .ifPresent(e -> ((EditableComponent) e).offerDiff(diff, eventTime));
     }
 
     protected abstract void finish();

@@ -7,10 +7,14 @@ import java.util.Map;
 
 public class CustomTextArea extends TextArea implements EditableComponent {
 
+    private long lastEventTime;
+
     public CustomTextArea(String id, String description, String value) {
         setId(id);
         setLabel(description);
-        offerDiff(Map.of(1, value));
+        offerDiff(Map.of(1, value), Long.MAX_VALUE);
+
+        lastEventTime = System.currentTimeMillis();
     }
 
     @Override
@@ -19,7 +23,12 @@ public class CustomTextArea extends TextArea implements EditableComponent {
     }
 
     @Override
-    public void offerDiff(Map<Integer, String> diff) {
+    public void offerDiff(Map<Integer, String> diff, long eventTime) {
+        if (lastEventTime > eventTime) {
+            return;
+        }
+
+        lastEventTime = eventTime;
         setValue(diff.get(1));
     }
 

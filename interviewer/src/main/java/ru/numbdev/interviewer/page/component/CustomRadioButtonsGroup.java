@@ -12,6 +12,7 @@ import java.util.Map;
 public class CustomRadioButtonsGroup extends RadioButtonGroup<String> implements EditableComponent {
 
     private String items;
+    private long lastEventTime;
 
     public CustomRadioButtonsGroup(String id, String description, String value) {
         this.items = value;
@@ -22,6 +23,8 @@ public class CustomRadioButtonsGroup extends RadioButtonGroup<String> implements
         setLabel(description);
         setItems(parsedValue.getValues());
         setValue(parsedValue.getSelected());
+
+        lastEventTime = System.currentTimeMillis();
     }
 
     @Override
@@ -30,7 +33,12 @@ public class CustomRadioButtonsGroup extends RadioButtonGroup<String> implements
     }
 
     @Override
-    public void offerDiff(Map<Integer, String> diff) {
+    public void offerDiff(Map<Integer, String> diff, long eventTime) {
+        if (lastEventTime > eventTime) {
+            return;
+        }
+
+        lastEventTime = eventTime;
         setValue(diff.get(1));
         items = parseValueFromRadioButton();
     }

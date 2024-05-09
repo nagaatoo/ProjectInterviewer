@@ -22,6 +22,8 @@ public class CustomEditor extends AceEditor implements EditableComponent {
     private final Map<Integer, String> rows = new ConcurrentHashMap<>();
     private final Lock lock = new ReentrantLock();
 
+    private long lastEventTime;
+
     public CustomEditor(String id, String value) {
         setId(id);
         var seq = new AtomicInteger();
@@ -38,6 +40,8 @@ public class CustomEditor extends AceEditor implements EditableComponent {
         setValue(value);
         setTheme(AceTheme.github);
         setMode(AceMode.java);
+
+        lastEventTime = System.currentTimeMillis();
     }
 
     // Есть 2 бага, к которым не вижу решение для Ace Editor:
@@ -114,13 +118,14 @@ public class CustomEditor extends AceEditor implements EditableComponent {
     }
 
     @Override
-    public void offerDiff(Map<Integer, String> diff) {
-        if (CollectionUtils.isEmpty(diff) || isNotDifferent(diff)) {
+    public void offerDiff(Map<Integer, String> diff, long eventTime) {
+        if (CollectionUtils.isEmpty(diff) || isNotDifferent(diff) || lastEventTime > eventTime) {
             return;
         }
 
         try {
             lock.lock();
+            lastEventTime = eventTime;
             saveResult(diff);
             addToComponent();
         } finally {

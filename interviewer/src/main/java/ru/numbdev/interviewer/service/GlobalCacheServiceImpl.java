@@ -122,6 +122,7 @@ public class GlobalCacheServiceImpl implements GlobalCacheService {
     private void listen(ConsumerRecord<UUID, Message> record) {
         var interviewId = record.key();
         var message = record.value();
+        var timestamp = record.timestamp();
 
         var sessionRooms = sessions.get(interviewId);
         if (sessionRooms != null) {
@@ -129,7 +130,7 @@ public class GlobalCacheServiceImpl implements GlobalCacheService {
                     .entrySet()
                     .stream()
                     .filter(es -> !es.getValue().getIdAsUUID().equals(message.roomId()))
-                    .forEach(es -> es.getKey().access(() -> es.getValue().doAction(message)));
+                    .forEach(es -> es.getKey().access(() -> es.getValue().doAction(message, timestamp)));
         }
     }
 

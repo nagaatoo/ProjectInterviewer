@@ -8,5 +8,5 @@ import java.util.UUID;
 public interface RoomObserver extends CustomComponent {
 
     UUID getInterviewId();
-    void doAction(Message message);
+    void doAction(Message message, long eventTime);
 }

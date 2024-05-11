@@ -1,4 +1,4 @@
-package ru.numbdev.interviewer.page;
+package ru.numbdev.interviewer.page.crud;
 
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -9,6 +9,7 @@ import com.vaadin.flow.router.Route;
 import jakarta.annotation.security.PermitAll;
 import org.springframework.context.ApplicationContext;
 import ru.numbdev.interviewer.enums.QuestionComponentType;
+import ru.numbdev.interviewer.page.MainPage;
 import ru.numbdev.interviewer.page.component.QuestionComponent;
 
 import java.util.UUID;

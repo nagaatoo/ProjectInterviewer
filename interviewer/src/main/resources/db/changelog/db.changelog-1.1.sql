@@ -23,6 +23,28 @@ create table if not exists rooms
     version integer not null default 1
 );
 
+create table if not exists files
+(
+    id        uuid primary key default gen_random_uuid(),
+    file_name varchar(128),
+    link      varchar(128)
+);
+
+create type candidate_solution as enum ('OK', 'QUESTION', 'BAD');
+create table if not exists candidates
+(
+    id                 uuid primary key   default gen_random_uuid(),
+    fio                varchar(128),
+    description        text,
+    file_id            uuid references files (id),
+    created            timestamp not null,
+    candidate_solution candidate_solution,
+    deleted            boolean   not null default false,
+    created_by         varchar(24),
+    updated            timestamp not null,
+    updated_by         varchar(24)
+);
+
 create table if not exists interviews
 (
     id                uuid primary key      default gen_random_uuid(),
@@ -32,6 +54,7 @@ create table if not exists interviews
     name              varchar(128) not null,
     date              timestamp    not null,
     created_date      timestamp    not null,
+    candidate_id      uuid references candidates (id),
     template_id       uuid references templates (id),
     questionnaire_id  uuid references questionnaires (id),
     solution          text,

@@ -41,6 +41,10 @@ public class InterviewEntity {
     private String owner;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "candidate_id")
+    private CandidateEntity candidate;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "template_id")
     private TemplateEntity template;
 

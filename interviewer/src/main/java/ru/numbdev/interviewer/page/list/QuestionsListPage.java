@@ -1,4 +1,4 @@
-package ru.numbdev.interviewer.page;
+package ru.numbdev.interviewer.page.list;
 
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.ComponentEventListener;
@@ -12,6 +12,9 @@ import com.vaadin.flow.router.RouteParam;
 import com.vaadin.flow.router.RouteParameters;
 import jakarta.annotation.security.PermitAll;
 import ru.numbdev.interviewer.jpa.entity.QuestionnaireEntity;
+import ru.numbdev.interviewer.page.MainPage;
+import ru.numbdev.interviewer.page.crud.QuestionCreatePage;
+import ru.numbdev.interviewer.page.crud.QuestionUpdatePage;
 import ru.numbdev.interviewer.page.component.abstracts.AbstractListPage;
 import ru.numbdev.interviewer.service.crud.QuestionsCrudService;
 

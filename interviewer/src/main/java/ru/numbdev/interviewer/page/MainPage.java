@@ -38,6 +38,8 @@ public class MainPage extends AppLayout {
         nav.addItem(
                 new SideNavItem("Создать команту", "/room/create",
                         VaadinIcon.PACKAGE.create()),
+                new SideNavItem("Кандидаты", "/candidates",
+                        VaadinIcon.USERS.create()),
                 new SideNavItem("Шаблоны", "/templates",
                         VaadinIcon.RECORDS.create()),
                 new SideNavItem("Собеседвоания", "/interviews",

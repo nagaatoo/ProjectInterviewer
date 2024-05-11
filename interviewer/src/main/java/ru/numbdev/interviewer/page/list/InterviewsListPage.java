@@ -1,4 +1,4 @@
-package ru.numbdev.interviewer.page;
+package ru.numbdev.interviewer.page.list;
 
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.ComponentEventListener;
@@ -11,6 +11,7 @@ import com.vaadin.flow.router.Route;
 import jakarta.annotation.security.PermitAll;
 import org.springframework.beans.factory.annotation.Value;
 import ru.numbdev.interviewer.jpa.entity.InterviewEntity;
+import ru.numbdev.interviewer.page.MainPage;
 import ru.numbdev.interviewer.page.component.abstracts.AbstractListPage;
 import ru.numbdev.interviewer.service.crud.InterviewCrudService;
 

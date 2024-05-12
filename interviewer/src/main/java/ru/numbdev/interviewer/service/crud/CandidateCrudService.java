@@ -1,6 +1,7 @@
 package ru.numbdev.interviewer.service.crud;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import jakarta.persistence.EntityNotFoundException;
@@ -26,6 +27,10 @@ public class CandidateCrudService {
 
     public CandidateEntity getById(UUID id) {
         return candidateRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Candidate with id " + id + " not found"));
+    }
+
+    public Optional<CandidateEntity> getOptionalById(UUID id) {
+        return candidateRepository.findById(id);
     }
 
     public long getSize(int page, int size, String quickSearch) {

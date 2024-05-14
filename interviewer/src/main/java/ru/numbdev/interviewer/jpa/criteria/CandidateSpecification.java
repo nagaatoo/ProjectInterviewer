@@ -24,4 +24,16 @@ public class CandidateSpecification {
             return cb.and(predicates.toArray(new Predicate[0]));
         };
     }
+
+    public static Specification<CandidateEntity> getCandidateByName(String search) {
+        return (interview, cq, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+
+            if (StringUtils.isNotBlank(search)) {
+                predicates.add(cb.like(cb.lower(interview.get("fio")), "%" + search.toLowerCase() + "%"));
+            }
+
+            return cb.and(predicates.toArray(new Predicate[0]));
+        };
+    }
 }

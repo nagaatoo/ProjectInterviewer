@@ -5,6 +5,7 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.numbdev.interviewer.enums.CandidateSolution;
 import ru.numbdev.interviewer.jpa.entity.CandidateEntity;
 import ru.numbdev.interviewer.jpa.entity.FileEntity;
 import ru.numbdev.interviewer.service.crud.CandidateCrudService;
@@ -21,20 +22,21 @@ public class CandidateServiceImpl implements CandidateService {
     @Override
     @Transactional
     public void createCandidate(String fio, String description, String fileName, byte[] file) {
-        createOrUpdateCandidate(new CandidateEntity(), fio, description, fileName, file);
+        createOrUpdateCandidate(new CandidateEntity(), fio, description, null, fileName, file);
     }
 
     @Override
     @Transactional
-    public void updateCandidate(UUID id, String fio, String description, String fileName, byte[] file) {
-        createOrUpdateCandidate(candidateCrudService.getById(id), fio, description, fileName, file);
+    public void updateCandidate(UUID id, String fio, String description, CandidateSolution solution, String fileName, byte[] file) {
+        createOrUpdateCandidate(candidateCrudService.getById(id), fio, description, solution, fileName, file);
     }
 
-    private void createOrUpdateCandidate(CandidateEntity entity, String fio, String description, String fileName,
-                                         byte[] file) {
+    private void createOrUpdateCandidate(CandidateEntity entity, String fio, String description, CandidateSolution solution,
+                                         String fileName, byte[] file) {
         entity
                 .setFio(fio)
                 .setDescription(description)
+                .setCandidateSolution(solution)
                 .setDeleted(false);
 
         if (file != null && file.length != 0) {

@@ -14,6 +14,7 @@ public class UserEntity {
     @Id
     private String login;
     private String pass;
+    private String fio;
     @Enumerated(EnumType.STRING)
     @JdbcType(PostgreSQLEnumJdbcType.class)
     private Role role;

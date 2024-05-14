@@ -3,6 +3,7 @@ package ru.numbdev.interviewer.service.crud;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -60,5 +61,15 @@ public class CandidateCrudService {
                         size
                 )
         );
+    }
+
+    public Stream<CandidateEntity> findCandidateByName(String search, int number, int size) {
+        return candidateRepository.findAll(
+                CandidateSpecification.getCandidateByName(search),
+                PageRequest.of(
+                        number,
+                        size
+                )
+        ).stream();
     }
 }

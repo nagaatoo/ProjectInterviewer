@@ -31,7 +31,7 @@ public abstract class AbstractInterviewComponent extends AbstractBuilderComponen
     private Button nextButton;
 
     @Getter
-    private int currentIdx = 0;
+    private int currentIdx = -1;
 
     protected InterviewComponentInitType type;
 
@@ -228,7 +228,9 @@ public abstract class AbstractInterviewComponent extends AbstractBuilderComponen
             currentIdx = components.size() <= 1 ? 0 : components.size() - 1;
             currentTaskComponent.changeTask(components.get(currentIdx));
 
-            previewButton.setEnabled(true);
+            if (currentIdx != 0) {
+                previewButton.setEnabled(true);
+            }
         } else if (type == InterviewComponentInitType.CURRENT_ONLY) {
             currentIdx = components.size() <= 1 ? 0 : components.size() - 1;
             currentTaskComponent.changeTask(components.get(currentIdx));
@@ -251,7 +253,7 @@ public abstract class AbstractInterviewComponent extends AbstractBuilderComponen
     }
 
     public void addTaskElement(ElementValues value) {
-        if (currentIdx > 0 || components.size() == 1) {
+        if (currentIdx != -1) {
             previewButton.setEnabled(true);
         }
 
@@ -259,9 +261,7 @@ public abstract class AbstractInterviewComponent extends AbstractBuilderComponen
         components.add(component);
         currentTaskComponent.changeTask(component);
 
-        if (components.size() != 1) {
-            currentIdx += 1;
-        }
+        currentIdx += 1;
     }
 
     public void changeLastTaskElement(ElementValues value) {

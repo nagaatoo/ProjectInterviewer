@@ -76,7 +76,9 @@ public class TemplateComponent extends AbstractBuilderListComponent {
             templateName.setReadOnly(true);
         }
 
-        add(templateName);
+        if (isEditable) {
+            add(templateName);
+        }
         add(tasks);
         buildDataProvider();
 

@@ -3,9 +3,11 @@ package ru.numbdev.interviewer.page;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.NativeLabel;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.splitlayout.SplitLayout;
 import com.vaadin.flow.component.splitlayout.SplitLayoutVariant;
 import com.vaadin.flow.router.*;
@@ -13,13 +15,16 @@ import com.vaadin.flow.server.auth.AnonymousAllowed;
 import de.f0rce.ace.AceEditor;
 import de.f0rce.ace.enums.AceMode;
 import org.springframework.context.ApplicationContext;
+import org.springframework.util.CollectionUtils;
 import ru.numbDev.common.dto.ElementValues;
+import ru.numbDev.common.enums.ElementType;
 import ru.numbDev.common.enums.EventType;
 import ru.numbdev.interviewer.component.RoomObserver;
 import ru.numbDev.common.dto.Message;
 import ru.numbdev.interviewer.enums.InterviewComponentInitType;
 import ru.numbdev.interviewer.enums.QuestionComponentType;
 import ru.numbdev.interviewer.jpa.entity.RoomEntity;
+import ru.numbdev.interviewer.jpa.entity.TemplateEntity;
 import ru.numbdev.interviewer.page.component.InterviewComponent;
 import ru.numbdev.interviewer.page.component.QuestionComponent;
 import ru.numbdev.interviewer.page.component.TemplateComponent;
@@ -27,8 +32,10 @@ import ru.numbdev.interviewer.service.HistoryService;
 import ru.numbdev.interviewer.service.GlobalCacheService;
 import ru.numbdev.interviewer.service.InterviewService;
 import ru.numbdev.interviewer.service.crud.RoomCrudService;
+import ru.numbdev.interviewer.service.crud.TemplateCrudService;
 import ru.numbdev.interviewer.utils.SecurityUtil;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -42,6 +49,7 @@ public class RoomPage extends VerticalLayout implements BeforeEnterObserver, Roo
 
     private final RoomCrudService roomCrudService;
     private final InterviewService interviewService;
+    private final TemplateCrudService templateCrudService;
     private final HistoryService historyService;
     private final GlobalCacheService globalCacheService;
     private final ApplicationContext context;
@@ -54,11 +62,12 @@ public class RoomPage extends VerticalLayout implements BeforeEnterObserver, Roo
     private VerticalLayout startMain;
 
     public RoomPage(RoomCrudService roomCrudService, InterviewService interviewService,
-                    HistoryService historyService, GlobalCacheService globalCacheService,
-                    ApplicationContext context) {
+                    HistoryService historyService, TemplateCrudService templateCrudService,
+                    GlobalCacheService globalCacheService, ApplicationContext context) {
         this.roomCrudService = roomCrudService;
         this.interviewService = interviewService;
         this.historyService = historyService;
+        this.templateCrudService = templateCrudService;
         this.globalCacheService = globalCacheService;
         this.context = context;
         setId(UUID.randomUUID().toString());
@@ -203,8 +212,25 @@ public class RoomPage extends VerticalLayout implements BeforeEnterObserver, Roo
         var splitLayout = new SplitLayout();
         var interviewerSplit = new SplitLayout();
         interviewerSplit.setOrientation(SplitLayout.Orientation.VERTICAL);
-        if (templateEntity != null) {
-            var templateLayout = new VerticalLayout();
+        var templateLayout = new VerticalLayout();
+
+        if (questionEntity != null) {
+            questionComponent = context.getBean(QuestionComponent.class);
+            questionComponent.init(QuestionComponentType.INTERVIEW, questionEntity.getId());
+            interviewerSplit.addToPrimary(questionComponent);
+        } else {
+            var emptyText = new Span("Опросники не указаны");
+            emptyText.setSizeFull();
+            interviewerSplit.addToPrimary(emptyText);
+        }
+
+        var templates = templateCrudService.getAvailableTemplates(SecurityUtil.getUserName());
+
+        if (!CollectionUtils.isEmpty(templates)) {
+            Select<TemplateEntity> templateList = new Select<>();
+            templateList.setLabel("Шаблоны");
+            templateList.setItemLabelGenerator(TemplateEntity::getName);
+            templateList.setItems(templates);
 
             var addButton = new Button("Новая задача");
             addButton.addClickListener(e -> {
@@ -212,37 +238,52 @@ public class RoomPage extends VerticalLayout implements BeforeEnterObserver, Roo
                 if (element != null) {
                     main.addTaskElement(element);
                     main.addCacheToCurrentElement();
+                    globalCacheService.offerComponent(getInterviewId(), getIdAsUUID(), element, false);
                 }
-
-                globalCacheService.offerComponent(getInterviewId(), getIdAsUUID(), element, false);
             });
             var changeButton = new Button("Заменить текущую");
             changeButton.addClickListener(e -> {
                 var element = templateComponent.getSelectedElement();
                 if (element != null) {
                     main.changeLastTaskElement(element);
-                }
 
-                globalCacheService.offerComponent(getInterviewId(), getIdAsUUID(), element, true);
-                main.addCacheToCurrentElement();
+                    globalCacheService.offerComponent(getInterviewId(), getIdAsUUID(), element, true);
+                    main.addCacheToCurrentElement();
+                }
             });
             var buttonLayout = new HorizontalLayout();
             buttonLayout.add(addButton, changeButton);
 
             templateComponent = context.getBean(TemplateComponent.class);
-            templateComponent.init(true, templateEntity.getId(), e -> {});
 
+            templateComponent.setVisible(false);
+            buttonLayout.setVisible(false);
+
+            templateList.addValueChangeListener(event -> {
+                templateComponent.init(true, event.getSource().getValue().getId(), e -> {});
+                templateComponent.setVisible(true);
+                buttonLayout.setVisible(true);
+            });
+            templateLayout.add(templateList);
             templateLayout.add(templateComponent);
             templateLayout.add(buttonLayout);
             templateLayout.setSizeFull();
-            interviewerSplit.addThemeVariants(SplitLayoutVariant.LUMO_SMALL);
-            interviewerSplit.addToPrimary(templateLayout);
-        }
 
-        if (questionEntity != null) {
-            questionComponent = context.getBean(QuestionComponent.class);
-            questionComponent.init(QuestionComponentType.INTERVIEW, questionEntity.getId());
-            interviewerSplit.addToSecondary(questionComponent);
+            interviewerSplit.addThemeVariants(SplitLayoutVariant.LUMO_SMALL);
+            interviewerSplit.addToSecondary(templateLayout);
+        } else {
+            var buttonLayout = new HorizontalLayout();
+            var addButton = new Button("Новая задача");
+            addButton.addClickListener(e -> {
+                var element = buildEmptyCode();
+                main.addTaskElement(element);
+                main.addCacheToCurrentElement();
+
+                globalCacheService.offerComponent(getInterviewId(), getIdAsUUID(), element, false);
+            });
+
+            interviewerSplit.addThemeVariants(SplitLayoutVariant.LUMO_SMALL);
+            interviewerSplit.addToSecondary(buttonLayout);
         }
 
         main.setMaxWidth("85%");
@@ -251,6 +292,16 @@ public class RoomPage extends VerticalLayout implements BeforeEnterObserver, Roo
         splitLayout.setSizeFull();
         splitLayout.addThemeVariants(SplitLayoutVariant.LUMO_SMALL);
         add(splitLayout);
+    }
+
+    private ElementValues buildEmptyCode() {
+        return new ElementValues(
+                UUID.randomUUID().toString(),
+                ElementType.CODE,
+                null,
+                null,
+                LocalDateTime.now()
+        );
     }
 
     private void buildReviewSplit() {

@@ -16,6 +16,8 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.JdbcType;
 import org.hibernate.dialect.PostgreSQLEnumJdbcType;
 import ru.numbdev.interviewer.enums.CandidateSolution;
@@ -43,5 +45,6 @@ public class CandidateEntity extends AbstractAuditEntity {
     private CandidateSolution candidateSolution;
 
     @OneToMany(mappedBy = "candidate", fetch = FetchType.LAZY)
+    @Fetch(value = FetchMode.JOIN)
     private List<InterviewEntity> interviews;
 }

@@ -17,6 +17,7 @@ import ru.numbdev.interviewer.page.component.abstracts.AbstractListPage;
 import ru.numbdev.interviewer.page.crud.CandidateCreatePage;
 import ru.numbdev.interviewer.page.crud.CandidateUpdatePage;
 import ru.numbdev.interviewer.service.crud.CandidateCrudService;
+import ru.numbdev.interviewer.service.crud.UserCrudService;
 
 @Route(value = "/candidates", layout = MainPage.class)
 @PageTitle("Кандидаты")
@@ -24,16 +25,18 @@ import ru.numbdev.interviewer.service.crud.CandidateCrudService;
 public class CandidatesListPage extends AbstractListPage<CandidateEntity> {
 
     private final CandidateCrudService candidateCrudService;
+    private final UserCrudService userCrudService;
 
-    protected CandidatesListPage(CandidateCrudService candidateCrudService) {
+    protected CandidatesListPage(CandidateCrudService candidateCrudService, UserCrudService userCrudService) {
         super(CandidateEntity.class);
         this.candidateCrudService = candidateCrudService;
+        this.userCrudService = userCrudService;
 
         initPage(true);
         addColumn(CandidateEntity::getFio, "Имя");
         addColumn(c -> c.getCandidateSolution() != null ? c.getCandidateSolution().getText() : "В процессе", "Решение");
         addColumn(CandidateEntity::getCreated, "Внесен");
-        addColumn(CandidateEntity::getCreatedBy, "Кто внес");
+        addColumn(e -> userCrudService.getByLogin(e.getCreatedBy()).getFio(), "Кто внес");
     }
 
     @Override

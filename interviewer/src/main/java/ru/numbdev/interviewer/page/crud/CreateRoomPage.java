@@ -116,6 +116,7 @@ public class CreateRoomPage extends VerticalLayout {
                 users.getOptionalValue().get().getLogin(),
                 SecurityUtil.isHr() ? SecurityUtil.getUserName() : null,
                 LocalDateTime.now(),
+                candidates.getValue().getId(),
                 null, //templateList.getValue() != null ? templateList.getValue().getId() : null
                 questionnaireList.getValue() != null ? questionnaireList.getValue().getId() : null
         );

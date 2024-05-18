@@ -18,6 +18,7 @@ public class InterviewServiceImpl implements InterviewService {
 
     private final InterviewCrudService interviewCrudService;
     private final RoomCrudService roomCrudService;
+    private final CandidateCrudService candidateCrudService;
     private final QuestionsCrudService questionsCrudService;
     private final TemplateCrudService templateCrudService;
     private final HistoryService historyService;
@@ -28,6 +29,7 @@ public class InterviewServiceImpl implements InterviewService {
             String interviewer,
             String hr,
             LocalDateTime date,
+            UUID candidateId,
             UUID templateId,
             UUID questionnaireId
     ) {
@@ -38,6 +40,7 @@ public class InterviewServiceImpl implements InterviewService {
                 .setInterviewerLogin(interviewer)
                 .setHrLogin(hr)
                 .setDate(date)
+                .setCandidate(candidateCrudService.getById(candidateId))
                 .setTemplate(
                         templateId != null
                                 ? templateCrudService.findById(templateId)

@@ -40,10 +40,10 @@ public class MainPage extends AppLayout {
                         VaadinIcon.PACKAGE.create()),
                 new SideNavItem("Кандидаты", "/candidates",
                         VaadinIcon.USERS.create()),
-                new SideNavItem("Шаблоны", "/templates",
-                        VaadinIcon.RECORDS.create()),
                 new SideNavItem("Собеседвоания", "/interviews",
                         VaadinIcon.LIST.create()),
+                new SideNavItem("Шаблоны", "/templates",
+                        VaadinIcon.RECORDS.create()),
                 new SideNavItem("Опросники", "/questions",
                         VaadinIcon.QUESTION.create())
                 );

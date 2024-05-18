@@ -17,6 +17,7 @@ import ru.numbdev.interviewer.page.crud.TemplateCreatePage;
 import ru.numbdev.interviewer.page.crud.TemplateUpdatePage;
 import ru.numbdev.interviewer.page.component.abstracts.AbstractListPage;
 import ru.numbdev.interviewer.service.crud.TemplateCrudService;
+import ru.numbdev.interviewer.service.crud.UserCrudService;
 
 @Route(value = "/templates", layout = MainPage.class)
 @PageTitle("Шаблоны")
@@ -24,13 +25,15 @@ import ru.numbdev.interviewer.service.crud.TemplateCrudService;
 public class TemplatesListPage extends AbstractListPage<TemplateEntity> {
 
     private final TemplateCrudService templateCrudService;
+    private final UserCrudService userCrudService;
 
-    public TemplatesListPage(TemplateCrudService templateCrudService) {
+    public TemplatesListPage(TemplateCrudService templateCrudService, UserCrudService userCrudService) {
         super(TemplateEntity.class);
         this.templateCrudService = templateCrudService;
+        this.userCrudService = userCrudService;
         initPage();
         addColumn(TemplateEntity::getName, "Название");
-        addColumn(TemplateEntity::getOwner, "Автор");
+        addColumn(e -> userCrudService.getByLogin(e.getOwner()).getFio(), "Автор");
     }
 
     @Override

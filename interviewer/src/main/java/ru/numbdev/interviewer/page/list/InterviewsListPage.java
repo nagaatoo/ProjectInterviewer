@@ -13,7 +13,9 @@ import org.springframework.beans.factory.annotation.Value;
 import ru.numbdev.interviewer.jpa.entity.InterviewEntity;
 import ru.numbdev.interviewer.page.MainPage;
 import ru.numbdev.interviewer.page.component.abstracts.AbstractListPage;
+import ru.numbdev.interviewer.service.crud.CandidateCrudService;
 import ru.numbdev.interviewer.service.crud.InterviewCrudService;
+import ru.numbdev.interviewer.service.crud.UserCrudService;
 
 import java.text.MessageFormat;
 
@@ -29,15 +31,17 @@ public class InterviewsListPage extends AbstractListPage<InterviewEntity> {
     private String domainName;
 
     private final InterviewCrudService interviewCrudService;
+    private final UserCrudService userCrudService;
 
-    public InterviewsListPage(InterviewCrudService interviewCrudService) {
+    public InterviewsListPage(InterviewCrudService interviewCrudService, UserCrudService userCrudService) {
         super(InterviewEntity.class);
         this.interviewCrudService = interviewCrudService;
+        this.userCrudService = userCrudService;
 
         initPage(false);
         addColumn(InterviewEntity::getName, "Название");
-        addColumn(InterviewEntity::getSolution, "Решение");
-        addColumn(InterviewEntity::getInterviewerLogin, "Интервьювер");
+        addColumn(e -> e.getFinishedDate() == null ? "Нет" : "Да", "Интервью завершено");
+        addColumn(e -> userCrudService.getByLogin(e.getInterviewerLogin()).getFio(), "Интервьювер");
         addColumn(e -> MessageFormat.format("http://{0}:{1}/room/{2}", domainName, port, e.getRoom().getId()), "Ссылка");
     }
 

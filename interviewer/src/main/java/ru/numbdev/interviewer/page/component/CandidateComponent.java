@@ -2,11 +2,14 @@ package ru.numbdev.interviewer.page.component;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.text.MessageFormat;
 import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -19,24 +22,37 @@ import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.server.StreamResource;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 import ru.numbdev.interviewer.enums.CandidateSolution;
 import ru.numbdev.interviewer.jpa.entity.FileEntity;
+import ru.numbdev.interviewer.jpa.entity.InterviewEntity;
 import ru.numbdev.interviewer.page.list.CandidatesListPage;
 import ru.numbdev.interviewer.service.CandidateService;
 import ru.numbdev.interviewer.service.FileService;
 import ru.numbdev.interviewer.service.crud.CandidateCrudService;
+import ru.numbdev.interviewer.service.crud.InterviewCrudService;
+import ru.numbdev.interviewer.service.crud.UserCrudService;
 
 @Component
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 @RequiredArgsConstructor
 public class CandidateComponent extends VerticalLayout {
 
+    @Value("${server.port}")
+    private String port;
+
+    @Value("${server.domain-name}")
+    private String domainName;
+
     private final CandidateService candidateService;
     private final CandidateCrudService candidateCrudService;
+    private final InterviewCrudService interviewCrudService;
     private final FileService fileService;
+    private final UserCrudService userCrudService;
 
     private UUID candidateId;
     private boolean isNew;
@@ -68,6 +84,10 @@ public class CandidateComponent extends VerticalLayout {
             }
 
             add(createSolution(entity.getCandidateSolution()));
+
+            if (!CollectionUtils.isEmpty(entity.getInterviews())) {
+                add(createInterviewList(entity.getInterviews()));
+            }
         }
         add(fileControls(false, fileEntity));
         add(createOrUpdateCandidateButton());
@@ -84,6 +104,18 @@ public class CandidateComponent extends VerticalLayout {
         }
 
         return solution;
+    }
+
+    private Grid<InterviewEntity> createInterviewList(List<InterviewEntity> interviews) {
+        var grid = new Grid<>(InterviewEntity.class, false);
+        grid.setItems(interviews);
+        grid.addColumn(InterviewEntity::getName).setHeader("Название");
+        grid.addColumn(e -> userCrudService.getByLogin(e.getInterviewerLogin()).getFio()).setHeader("Интервьювер");
+        grid.addItemDoubleClickListener(e -> {
+            var url =  MessageFormat.format("http://{0}:{1}/room/{2}", domainName, port, e.getItem().getRoom().getId().toString());
+            UI.getCurrent().getPage().open(url);
+        });
+        return grid;
     }
 
     public void initReadOnly(UUID candidateId) {

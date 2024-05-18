@@ -17,6 +17,7 @@ import ru.numbdev.interviewer.page.crud.QuestionCreatePage;
 import ru.numbdev.interviewer.page.crud.QuestionUpdatePage;
 import ru.numbdev.interviewer.page.component.abstracts.AbstractListPage;
 import ru.numbdev.interviewer.service.crud.QuestionsCrudService;
+import ru.numbdev.interviewer.service.crud.UserCrudService;
 
 @Route(value = "/questions", layout = MainPage.class)
 @PageTitle("Опросники")
@@ -24,14 +25,16 @@ import ru.numbdev.interviewer.service.crud.QuestionsCrudService;
 public class QuestionsListPage extends AbstractListPage<QuestionnaireEntity> {
 
     private final QuestionsCrudService questionsCrudService;
+    private final UserCrudService userCrudService;
 
-    public QuestionsListPage(QuestionsCrudService questionsCrudService) {
+    public QuestionsListPage(QuestionsCrudService questionsCrudService, UserCrudService userCrudService) {
         super(QuestionnaireEntity.class);
         this.questionsCrudService = questionsCrudService;
+        this.userCrudService = userCrudService;
 
         initPage();
         addColumn(QuestionnaireEntity::getName, "Название");
-        addColumn(QuestionnaireEntity::getAuthor, "Автор");
+        addColumn(e -> userCrudService.getByLogin(e.getAuthor()).getFio(), "Автор");
     }
 
     @Override

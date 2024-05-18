@@ -13,6 +13,7 @@ public interface InterviewService {
             String interviewer,
             String hr,
             LocalDateTime date,
+            UUID candidateId,
             UUID templateId,
             UUID questionnaireId
     );

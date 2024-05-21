@@ -11,6 +11,7 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteParam;
 import com.vaadin.flow.router.RouteParameters;
 import jakarta.annotation.security.PermitAll;
+import ru.numbDev.common.utils.DateTimeUtils;
 import ru.numbdev.interviewer.jpa.entity.CandidateEntity;
 import ru.numbdev.interviewer.page.MainPage;
 import ru.numbdev.interviewer.page.component.abstracts.AbstractListPage;
@@ -35,8 +36,8 @@ public class CandidatesListPage extends AbstractListPage<CandidateEntity> {
         initPage(true);
         addColumn(CandidateEntity::getFio, "Имя");
         addColumn(c -> c.getCandidateSolution() != null ? c.getCandidateSolution().getText() : "В процессе", "Решение");
-        addColumn(CandidateEntity::getCreated, "Внесен");
-        addColumn(e -> userCrudService.getByLogin(e.getCreatedBy()).getFio(), "Кто внес");
+        addColumn(c -> DateTimeUtils.parteToString(c.getCreated()), "Внесен");
+        addColumn(c -> userCrudService.getByLogin(c.getCreatedBy()).getFio(), "Кто внес");
     }
 
     @Override

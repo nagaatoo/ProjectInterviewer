@@ -235,6 +235,11 @@ public abstract class AbstractInterviewComponent extends AbstractBuilderComponen
             currentIdx = components.size() <= 1 ? 0 : components.size() - 1;
             currentTaskComponent.changeTask(components.get(currentIdx));
         }
+
+        if (type != InterviewComponentInitType.CURRENT_ONLY && components.size() == 1) {
+            nextButton.setEnabled(false);
+            previewButton.setEnabled(false);
+        }
     }
 
     public void addNewTask(ElementValues value) {

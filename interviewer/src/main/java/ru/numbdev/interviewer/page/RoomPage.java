@@ -396,6 +396,14 @@ public class RoomPage extends VerticalLayout implements BeforeEnterObserver, Roo
 
     private void doFinish() {
         main.closeInterview();
+        if (isInterviewer) {
+            remove(main);
+            buildReviewPage();
+        } else {
+            remove(title);
+            remove(main);
+            buildReadPage();
+        }
     }
 
     private void doDiff(Message message, long eventTime) {

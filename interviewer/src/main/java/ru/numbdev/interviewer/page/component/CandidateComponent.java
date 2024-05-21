@@ -4,7 +4,9 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.text.MessageFormat;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import com.vaadin.flow.component.UI;
@@ -27,6 +29,8 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
+import ru.numbDev.common.dto.ElementValues;
+import ru.numbDev.common.utils.DateTimeUtils;
 import ru.numbdev.interviewer.enums.CandidateSolution;
 import ru.numbdev.interviewer.jpa.entity.FileEntity;
 import ru.numbdev.interviewer.jpa.entity.InterviewEntity;
@@ -86,7 +90,15 @@ public class CandidateComponent extends VerticalLayout {
             add(createSolution(entity.getCandidateSolution()));
 
             if (!CollectionUtils.isEmpty(entity.getInterviews())) {
-                add(createInterviewList(entity.getInterviews()));
+                add(
+                        createInterviewList(
+                                Optional.ofNullable(entity.getInterviews())
+                                        .orElseGet(List::of)
+                                        .stream()
+                                        .sorted(Comparator.comparing(InterviewEntity::getCreatedDate, Comparator.reverseOrder()))
+                                        .toList()
+                        )
+                );
             }
         }
         add(fileControls(false, fileEntity));
@@ -111,8 +123,10 @@ public class CandidateComponent extends VerticalLayout {
         grid.setItems(interviews);
         grid.addColumn(InterviewEntity::getName).setHeader("Название");
         grid.addColumn(e -> userCrudService.getByLogin(e.getInterviewerLogin()).getFio()).setHeader("Интервьювер");
+        grid.addColumn(e -> DateTimeUtils.parteToString(e.getCreatedDate())).setHeader("Дата завершения");
         grid.addItemDoubleClickListener(e -> {
-            var url =  MessageFormat.format("http://{0}:{1}/room/{2}", domainName, port, e.getItem().getRoom().getId().toString());
+            var url = MessageFormat.format("http://{0}:{1}/room/{2}", domainName, port,
+                    e.getItem().getRoom().getId().toString());
             UI.getCurrent().getPage().open(url);
         });
         return grid;
@@ -207,7 +221,8 @@ public class CandidateComponent extends VerticalLayout {
                     candidateId,
                     fioField.getValue(),
                     descriptionField.getValue(),
-                    StringUtils.isNotBlank(solution.getValue()) ? CandidateSolution.getSolution(solution.getValue()) : null,
+                    StringUtils.isNotBlank(solution.getValue()) ? CandidateSolution.getSolution(solution.getValue())
+                            : null,
                     file.size() > 0 ? fileName : null,
                     file.size() > 0 ? file.toByteArray() : null
             );

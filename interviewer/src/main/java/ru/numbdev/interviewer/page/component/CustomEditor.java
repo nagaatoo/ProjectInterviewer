@@ -20,9 +20,11 @@ import java.util.stream.Collectors;
 public class CustomEditor extends AceEditor implements EditableComponent {
 
     private final Map<Integer, String> rows = new ConcurrentHashMap<>();
+    private final Map<Integer, String> diff = new ConcurrentHashMap<>();
     private final Lock lock = new ReentrantLock();
 
     private long lastEventTime;
+    private boolean nextEventIsBug = false;
 
     public CustomEditor(String id, String value) {
         setId(id);
@@ -48,13 +50,15 @@ public class CustomEditor extends AceEditor implements EditableComponent {
     // 1) При достаточно быстром наборе текста лок не успевает за корректкой (слетает)
     // 2) Ace Editor генерирует событие из клиента с пустым значением перед или после ввода. Решение - игнорируем полную отчистку (костыль)
     @Override
-    public Map<Integer, String> getDiff(String actualState) {
-        if (StringUtils.isEmpty(actualState)) {
-            return Map.of();
-        }
-
+    public void setDiff(String actualState) {
         try {
             lock.lock();
+            if (StringUtils.isEmpty(actualState) && nextEventIsBug) {
+                nextEventIsBug = false;
+                return;
+            }
+
+            nextEventIsBug = true;
             var seq = new AtomicInteger();
             var actualRows = Arrays
                     .stream(actualState.split("\n"))
@@ -69,16 +73,15 @@ public class CustomEditor extends AceEditor implements EditableComponent {
             }
 
             if (actualRows.size() >= rows.size()) {
-                var diff = actualRows
+                var protoDiff = actualRows
                         .entrySet()
                         .stream()
                         .filter(es -> {
                             var row = rows.get(es.getKey());
-                            return !es.getValue().equals(row);
+                            return !es.getValue().equals(row) || !rows.containsKey(es.getKey());
                         })
                         .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-                rows.putAll(diff);
-                return diff;
+                diff.putAll(protoDiff);
             } else {
                 var emptyDiff = rows
                         .keySet()
@@ -86,7 +89,7 @@ public class CustomEditor extends AceEditor implements EditableComponent {
                         .filter(s -> !actualRows.containsKey(s))
                         .collect(Collectors.toMap(s -> s, s -> ValueConstants.NULL_ROW_TAG));
 
-                var diff = rows
+                var protoDiff = rows
                         .entrySet()
                         .stream()
                         .filter(es -> {
@@ -102,16 +105,32 @@ public class CustomEditor extends AceEditor implements EditableComponent {
                         })
                         .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
-                diff.putAll(emptyDiff);
-                diff.forEach((key, value) -> {
-                    if (ValueConstants.NULL_ROW_TAG.equals(value)) {
-                        rows.remove(key);
-                    } else {
-                        rows.put(key, value);
-                    }
-                });
-                return diff;
+                protoDiff.putAll(emptyDiff);
+                diff.putAll(protoDiff);
+//                protoDiff.forEach((key, value) -> {
+//                    if (ValueConstants.NULL_ROW_TAG.equals(value)) {
+//                        diff.remove(key);
+//                    } else {
+//                        diff.put(key, value);
+//                    }
+//                });
+
             }
+
+            rows.clear();
+            rows.putAll(actualRows);
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    @Override
+    public Map<Integer, String> getDiff() {
+        try {
+            lock.lock();
+            var saved =  Map.copyOf(diff);
+            diff.clear();
+            return saved;
         } finally {
             lock.unlock();
         }
@@ -139,7 +158,7 @@ public class CustomEditor extends AceEditor implements EditableComponent {
                 .stream()
                 .noneMatch(es -> {
                     var row = rows.get(es.getKey());
-                    return row != null && !row.equals(es.getValue());
+                    return row == null || !row.equals(es.getValue());
                 });
     }
 

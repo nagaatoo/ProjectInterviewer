@@ -9,6 +9,7 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import lombok.Getter;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.util.CollectionUtils;
 import ru.numbDev.common.dto.ElementValues;
 import ru.numbDev.common.enums.EventType;
@@ -322,12 +323,13 @@ public abstract class AbstractInterviewComponent extends AbstractBuilderComponen
     private void registerListenerForEditor(CustomEditor editor) {
         editor.addAceChangedListener(e -> {
                     if (e.isFromClient() && globalCacheService != null) {
-                        globalCacheService.offerDiff(
-                                interviewerId,
-                                roomId,
-                                editor.getIdAsUUID(),
-                                editor.getDiff(e.getValue())
-                        );
+//                        globalCacheService.offerDiff(
+//                                interviewerId,
+//                                roomId,
+//                                editor.getIdAsUUID(),
+//                                editor.getDiff(e.getValue())
+//                        );
+                        editor.setDiff(e.getValue());
                     }
                 }
         );
@@ -336,12 +338,13 @@ public abstract class AbstractInterviewComponent extends AbstractBuilderComponen
     private void registerListenerForRadioButtons(CustomRadioButtonsGroup group) {
         group.addValueChangeListener(e -> {
             if (e.isFromClient() && globalCacheService != null) {
-                globalCacheService.offerDiff(
-                        interviewerId,
-                        roomId,
-                        group.getIdAsUUID(),
-                        group.getDiff(e.getValue())
-                );
+//                globalCacheService.offerDiff(
+//                        interviewerId,
+//                        roomId,
+//                        group.getIdAsUUID(),
+//                        group.getDiff(e.getValue())
+//                );
+                group.setDiff(e.getValue());
             }
         });
     }
@@ -349,14 +352,33 @@ public abstract class AbstractInterviewComponent extends AbstractBuilderComponen
     private void registerListenerForTextArea(CustomTextArea textArea) {
         textArea.addValueChangeListener(e -> {
                     if (e.isFromClient() && globalCacheService != null) {
-                        globalCacheService.offerDiff(
-                                interviewerId,
-                                roomId,
-                                textArea.getIdAsUUID(),
-                                textArea.getDiff(e.getValue())
-                        );
+//                        globalCacheService.offerDiff(
+//                                interviewerId,
+//                                roomId,
+//                                textArea.getIdAsUUID(),
+//                                textArea.getDiff(e.getValue())
+//                        );
+                        textArea.setDiff(e.getValue());
                     }
                 }
         );
+    }
+
+    @Scheduled(cron = "0/1 * * ? * *")
+    private void cacheJob() {
+        for (Component component : components) {
+            EditableComponent editable = (EditableComponent) component;
+            var diff = editable.getDiff();
+
+            if (!diff.isEmpty()) {
+                globalCacheService.offerDiff(
+                        interviewerId,
+                        roomId,
+                        editable.getIdAsUUID(),
+                        diff
+                );
+            }
+        }
+
     }
 }

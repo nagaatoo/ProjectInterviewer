@@ -9,6 +9,8 @@ public class CustomTextArea extends TextArea implements EditableComponent {
 
     private long lastEventTime;
 
+    private String actualState;
+
     public CustomTextArea(String id, String description, String value) {
         setId(id);
         setLabel(description);
@@ -18,7 +20,12 @@ public class CustomTextArea extends TextArea implements EditableComponent {
     }
 
     @Override
-    public Map<Integer, String> getDiff(String actualState) {
+    public void setDiff(String actualState) {
+        this.actualState = actualState;
+    }
+
+    @Override
+    public Map<Integer, String> getDiff() {
         return Map.of(1, actualState);
     }
 

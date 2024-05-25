@@ -35,7 +35,9 @@ public class CustomRadioButtonsGroup extends RadioButtonGroup<String> implements
 
     @Override
     public Map<Integer, String> getDiff() {
-        return Map.of(1, actualState);
+        return StringUtils.isBlank(actualState)
+                ? Map.of(1, "")
+                : Map.of(1, actualState);
     }
 
     @Override
@@ -44,8 +46,13 @@ public class CustomRadioButtonsGroup extends RadioButtonGroup<String> implements
             return;
         }
 
+        var diffVal = diff.get(1);
+        if (StringUtils.isBlank(diffVal)) {
+            return;
+        }
+
         lastEventTime = eventTime;
-        setValue(diff.get(1));
+        setValue(diffVal);
         items = parseValueFromRadioButton();
     }
 

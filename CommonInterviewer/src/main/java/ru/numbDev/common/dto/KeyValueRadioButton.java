@@ -1,4 +1,4 @@
-package ru.numbdev.interviewer.dto;
+package ru.numbDev.common.dto;
 
 import lombok.Builder;
 import lombok.Getter;

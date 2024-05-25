@@ -1,10 +1,7 @@
 package ru.numbdev.cacheinterviewer.service;
 
-import java.util.Arrays;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 
 import com.hazelcast.core.HazelcastInstance;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +13,8 @@ import org.springframework.stereotype.Service;
 import ru.numbDev.common.constant.ValueConstants;
 import ru.numbDev.common.dto.ElementValues;
 import ru.numbDev.common.dto.Message;
+import ru.numbDev.common.enums.ElementType;
+import ru.numbDev.common.utils.ElementUtils;
 
 @Service
 @RequiredArgsConstructor
@@ -52,31 +51,31 @@ public class DiffCommitCacheService {
                 .filter(e -> e.getValue().id().equals(message.value().id()))
                 .findFirst()
                 .ifPresent(e -> {
-                    var rows = buildRows(e.getValue().value());
-                    saveResult(rows, message.diffs());
+                    var rows = ElementUtils.buildRowsElement(e.getValue().value());
+                    saveResult(rows, message.diffs(), e.getValue().type());
                     var newValue = buildValue(rows);
                     map.put(e.getKey(), e.getValue().copyWithNewValue(newValue));
                     sendMessage(interviewId, message);
                 });
     }
 
-    private Map<Integer, String> buildRows(String value) {
-        var seq = new AtomicInteger();
-        return Arrays
-                .stream(value.split("\n"))
-                .collect(
-                        Collectors.toConcurrentMap(
-                                e -> seq.incrementAndGet(),
-                                e -> e
-                        )
-                );
-    }
-
     private String buildValue(Map<Integer, String> rows) {
         return String.join(ValueConstants.SPLIT, rows.values());
     }
 
-    private void saveResult(Map<Integer, String> rows, Map<Integer, String> diff) {
+    private void saveResult(Map<Integer, String> rows, Map<Integer, String> diff, ElementType type) {
+        switch (type) {
+            case QUESTION -> saveQuestionResult(rows, diff);
+            case CODE -> saveCodeResult(rows, diff);
+        }
+    }
+
+    private void saveQuestionResult(Map<Integer, String> rows, Map<Integer, String> diff) {
+        var result = ElementUtils.parseValueFromRadioButton(diff.get(1), rows);
+        rows.put(1, result);
+    }
+
+    private void saveCodeResult(Map<Integer, String> rows, Map<Integer, String> diff) {
         diff.forEach((rowIdx, value) -> {
             if (ValueConstants.NULL_ROW_TAG.equals(value)) {
                 rows.remove(rowIdx);

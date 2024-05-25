@@ -3,11 +3,12 @@ package ru.numbdev.interviewer.page.component;
 import com.vaadin.flow.component.radiobutton.RadioButtonGroup;
 import com.vaadin.flow.component.radiobutton.RadioGroupVariant;
 import org.apache.commons.lang3.StringUtils;
-import ru.numbdev.interviewer.dto.KeyValueRadioButton;
+import ru.numbDev.common.utils.ElementUtils;
 import ru.numbdev.interviewer.page.component.abstracts.EditableComponent;
 
-import java.util.Arrays;
 import java.util.Map;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class CustomRadioButtonsGroup extends RadioButtonGroup<String> implements EditableComponent {
 
@@ -15,12 +16,14 @@ public class CustomRadioButtonsGroup extends RadioButtonGroup<String> implements
     private String actualState;
     private long lastEventTime;
 
+    private final Lock lock = new ReentrantLock();
+
     public CustomRadioButtonsGroup(String id, String description, String value) {
         this.items = value;
 
         setId(id);
         addThemeVariants(RadioGroupVariant.LUMO_VERTICAL);
-        var parsedValue = parseRadioButtonFromValue(value);
+        var parsedValue = ElementUtils.parseRadioButtonFromValue(value);
         setLabel(description);
         setItems(parsedValue.getValues());
         setValue(parsedValue.getSelected());
@@ -30,14 +33,29 @@ public class CustomRadioButtonsGroup extends RadioButtonGroup<String> implements
 
     @Override
     public void setDiff(String actualState) {
-        this.actualState = actualState;
+        try {
+            lock.lock();
+            this.actualState = actualState;
+        } finally {
+            lock.unlock();
+        }
     }
 
     @Override
     public Map<Integer, String> getDiff() {
-        return StringUtils.isBlank(actualState)
-                ? Map.of(1, "")
-                : Map.of(1, actualState);
+        try {
+            lock.lock();
+            if (StringUtils.isEmpty(actualState)) {
+                return Map.of();
+            }
+
+            var result = Map.of(1, actualState);
+            actualState = null;
+            return result;
+
+        } finally {
+            lock.unlock();
+        }
     }
 
     @Override
@@ -61,39 +79,9 @@ public class CustomRadioButtonsGroup extends RadioButtonGroup<String> implements
         setReadOnly(true);
     }
 
-    // Формат: Foo, Boo, #Coo#, Doo
-    private KeyValueRadioButton parseRadioButtonFromValue(String value) {
-        var builder = KeyValueRadioButton.builder();
-        if (StringUtils.isBlank(value)) {
-            return builder.build();
-        }
-
-        var parts = value.split(",");
-        builder.values(
-                Arrays
-                        .stream(parts)
-                        .peek(v -> {
-                            if (v.contains("#")) {
-                                builder.selected(cleanTags(v));
-                            }
-                        })
-                        .map(this::cleanTags)
-                        .toList()
-        );
-
-        return builder.build();
-    }
-
     public String parseValueFromRadioButton() {
         var selected = getValue();
-        if (StringUtils.isBlank(selected)) {
-            return cleanTags(items);
-        }
-
-        return items.replace(selected, "#" + selected + "#");
+        return ElementUtils.parseValueFromRadioButton(selected, items);
     }
 
-    private String cleanTags(String str) {
-        return str.replace("#", "");
-    }
 }

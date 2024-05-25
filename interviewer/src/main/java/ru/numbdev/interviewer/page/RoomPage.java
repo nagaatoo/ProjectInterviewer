@@ -320,7 +320,7 @@ public class RoomPage extends VerticalLayout implements BeforeEnterObserver, Roo
         }
 
         var reviewEditor = new AceEditor();
-        reviewEditor.setMode(AceMode.text);
+        reviewEditor.setMode(AceMode.java);
         reviewEditor.setSizeFull();
         reviewEditor.setShowGutter(false);
         reviewEditor.setValue(roomEntity.getInterview().getSolution());

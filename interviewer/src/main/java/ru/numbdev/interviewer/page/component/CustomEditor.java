@@ -6,13 +6,12 @@ import de.f0rce.ace.enums.AceTheme;
 import io.micrometer.common.util.StringUtils;
 import org.springframework.util.CollectionUtils;
 import ru.numbDev.common.constant.ValueConstants;
+import ru.numbDev.common.utils.ElementUtils;
 import ru.numbdev.interviewer.page.component.abstracts.EditableComponent;
 
 import java.util.AbstractMap;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
@@ -28,15 +27,7 @@ public class CustomEditor extends AceEditor implements EditableComponent {
 
     public CustomEditor(String id, String value) {
         setId(id);
-        var seq = new AtomicInteger();
-        var init = Arrays
-                .stream(value.split("\n"))
-                .collect(
-                        Collectors.toConcurrentMap(
-                                e -> seq.incrementAndGet(),
-                                e -> e
-                        )
-                );
+        var init = ElementUtils.buildRowsElement(value);
 
         rows.putAll(init);
         setValue(value);
@@ -46,9 +37,6 @@ public class CustomEditor extends AceEditor implements EditableComponent {
         lastEventTime = System.currentTimeMillis();
     }
 
-    // Есть 2 бага, к которым не вижу решение для Ace Editor:
-    // 1) При достаточно быстром наборе текста лок не успевает за корректкой (слетает)
-    // 2) Ace Editor генерирует событие из клиента с пустым значением перед или после ввода. Решение - игнорируем полную отчистку (костыль)
     @Override
     public void setDiff(String actualState) {
         try {
@@ -59,15 +47,7 @@ public class CustomEditor extends AceEditor implements EditableComponent {
             }
 
             nextEventIsBug = true;
-            var seq = new AtomicInteger();
-            var actualRows = Arrays
-                    .stream(actualState.split("\n"))
-                    .collect(
-                            Collectors.toConcurrentMap(
-                                    e -> seq.incrementAndGet(),
-                                    e -> e
-                            )
-                    );
+            var actualRows = ElementUtils.buildRowsElement(actualState);
             if (actualState.endsWith("\n")) {
                 actualRows.put(actualRows.size() + 1, "");
             }
@@ -107,14 +87,6 @@ public class CustomEditor extends AceEditor implements EditableComponent {
 
                 protoDiff.putAll(emptyDiff);
                 diff.putAll(protoDiff);
-//                protoDiff.forEach((key, value) -> {
-//                    if (ValueConstants.NULL_ROW_TAG.equals(value)) {
-//                        diff.remove(key);
-//                    } else {
-//                        diff.put(key, value);
-//                    }
-//                });
-
             }
 
             rows.clear();

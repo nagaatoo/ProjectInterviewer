@@ -13,5 +13,6 @@
         <module>interviewer</module>
         <module>CacheInterviewer</module>
         <module>CommonInterviewer</module>
+        <module>Conference</module>
     </modules>
 </project>

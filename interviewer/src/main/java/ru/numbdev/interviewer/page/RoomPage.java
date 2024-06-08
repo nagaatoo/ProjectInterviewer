@@ -1,6 +1,5 @@
 package ru.numbdev.interviewer.page;
 
-import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.NativeLabel;
 import com.vaadin.flow.component.html.Span;
@@ -26,6 +25,7 @@ import ru.numbdev.interviewer.enums.QuestionComponentType;
 import ru.numbdev.interviewer.jpa.entity.RoomEntity;
 import ru.numbdev.interviewer.jpa.entity.TemplateEntity;
 import ru.numbdev.interviewer.page.component.InterviewComponent;
+import ru.numbdev.interviewer.page.component.InterviewerWebCamComponent;
 import ru.numbdev.interviewer.page.component.QuestionComponent;
 import ru.numbdev.interviewer.page.component.TemplateComponent;
 import ru.numbdev.interviewer.service.HistoryService;
@@ -44,6 +44,7 @@ import java.util.UUID;
 @AnonymousAllowed
 public class RoomPage extends VerticalLayout implements BeforeEnterObserver, RoomObserver {
 
+    private final InterviewComponent interviewComponent;
     private boolean isInterviewer = false;
     private RoomEntity roomEntity;
 
@@ -56,14 +57,14 @@ public class RoomPage extends VerticalLayout implements BeforeEnterObserver, Roo
 
     private TemplateComponent templateComponent;
     private QuestionComponent questionComponent;
-    private HorizontalLayout title;
+    private InterviewerWebCamComponent title;
     private InterviewComponent main;
 
     private VerticalLayout startMain;
 
     public RoomPage(RoomCrudService roomCrudService, InterviewService interviewService,
                     HistoryService historyService, TemplateCrudService templateCrudService,
-                    GlobalCacheService globalCacheService, ApplicationContext context) {
+                    GlobalCacheService globalCacheService, ApplicationContext context, InterviewComponent interviewComponent) {
         this.roomCrudService = roomCrudService;
         this.interviewService = interviewService;
         this.historyService = historyService;
@@ -71,6 +72,7 @@ public class RoomPage extends VerticalLayout implements BeforeEnterObserver, Roo
         this.globalCacheService = globalCacheService;
         this.context = context;
         setId(UUID.randomUUID().toString());
+        this.interviewComponent = interviewComponent;
     }
 
     @Override
@@ -123,10 +125,10 @@ public class RoomPage extends VerticalLayout implements BeforeEnterObserver, Roo
     }
 
     private void buildInterviewPage() {
-        buildTitle();
+//        buildTitle();
         buildMain();
 
-        add(title);
+//        add(title);
         buildInterviewSplit();
         setSizeFull();
 
@@ -159,12 +161,15 @@ public class RoomPage extends VerticalLayout implements BeforeEnterObserver, Roo
                 buildInterviewPage();
                 startInterview();
                 globalCacheService.offerEvent(roomEntity.getInterview().getId(), getIdAsUUID(), EventType.START_INTERVIEW);
+                title.start();
             });
             startMain.add(startButton);
             startMain.setAlignSelf(Alignment.CENTER, startButton);
             startMain.setAlignSelf(Alignment.CENTER, startButton);
         }
 
+        buildTitle();
+        add(title);
         add(startMain);
         setAlignSelf(Alignment.CENTER, startMain);
         setSizeFull();
@@ -184,8 +189,7 @@ public class RoomPage extends VerticalLayout implements BeforeEnterObserver, Roo
     }
 
     private void buildTitle() {
-        title = new HorizontalLayout();
-        title.add(new Text(roomEntity.getInterview().getName()));
+        title = context.getBean(InterviewerWebCamComponent.class);
     }
 
     private void buildMain() {

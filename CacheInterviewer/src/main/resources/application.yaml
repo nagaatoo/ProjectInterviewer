@@ -1,3 +1,5 @@
+server:
+  port: 8889
 spring:
   application:
     name: Cache Interviewer

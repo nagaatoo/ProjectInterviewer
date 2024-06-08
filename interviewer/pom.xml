@@ -60,6 +60,28 @@
             <artifactId>spring-session-core</artifactId>
         </dependency>
 
+<!--        Не поддерживаемый аддон - позже попробовать -->
+<!--        <dependency>-->
+<!--            <groupId>org.vaadin</groupId>-->
+<!--            <artifactId>webrtc-addon</artifactId>-->
+<!--            <version>0.2</version>-->
+<!--        </dependency>-->
+        <dependency>
+            <groupId>org.vaadin.addons.parttio</groupId>
+            <artifactId>vcamera</artifactId>
+            <version>4.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-websocket</artifactId>
+        </dependency>
+
+<!--        <dependency>-->
+<!--            <groupId>org.vaadin.addons.tatu</groupId>-->
+<!--            <artifactId>webcam-flow</artifactId>-->
+<!--            <version>1.0.0</version>-->
+<!--        </dependency>-->
+
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>

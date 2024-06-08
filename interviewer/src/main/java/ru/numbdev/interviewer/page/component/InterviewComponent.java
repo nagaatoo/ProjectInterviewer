@@ -1,5 +1,6 @@
 package ru.numbdev.interviewer.page.component;
 
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
@@ -14,9 +15,15 @@ public class InterviewComponent extends AbstractInterviewComponent {
     @Autowired
     private InterviewService interviewService;
 
+    @Setter
+    private Runnable afterFinishedAction;
+
     @Override
     protected void finish() {
-        interviewService.finishInterview(getInterviewerId(), getInterviewResult());
-        closeInterview();
+        // TODO включить обратно
+//        interviewService.finishInterview(getInterviewerId(), getInterviewResult());
+//        closeInterview();
+        afterFinishedAction.run();
     }
+
 }

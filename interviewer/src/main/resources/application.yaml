@@ -1,8 +1,14 @@
 server:
   port: 8888
   domain-name: localhost
+  tomcat:
+    max-http-form-post-size: 100MB
 
 spring:
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
   datasource:
     url: jdbc:postgresql://localhost:5432/interviewer
     username: admin

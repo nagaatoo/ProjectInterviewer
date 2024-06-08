@@ -20,6 +20,7 @@ public class SecurityConfig extends VaadinWebSecurity {
 
     @Override
     public void configure(WebSecurity web) throws Exception {
+        web.ignoring().requestMatchers("VAADIN/dynamic/resource/**", "src/**");
         // Customize your WebSecurity configuration.
         super.configure(web);
     }

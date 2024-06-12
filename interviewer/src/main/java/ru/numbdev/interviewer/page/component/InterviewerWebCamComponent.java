@@ -5,11 +5,7 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.nio.MappedByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,8 +14,8 @@ import java.util.List;
 public class InterviewerWebCamComponent extends HorizontalLayout {
 
     private final CameraComponent camera = null;
-    private final NewCamera newCamera;
-    private final NewCamera companionCamera;
+    private final VidoeComponent newCamera;
+    private final VidoeComponent companionCamera;
     private final List<Component> roommates = new ArrayList<>();
 
     private final List<ByteArrayOutputStream> streams = new ArrayList<>(); //MappedByteBuffer
@@ -40,10 +36,10 @@ public class InterviewerWebCamComponent extends HorizontalLayout {
 //        add(camera);
 //        add(candidate);
 
-        newCamera = new NewCamera(true);
+        newCamera = new VidoeComponent(true);
         add(newCamera);
 
-        companionCamera = new NewCamera(false);
+        companionCamera = new VidoeComponent(false);
         add(companionCamera);
     }
 

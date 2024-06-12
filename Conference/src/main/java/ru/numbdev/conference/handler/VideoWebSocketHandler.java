@@ -1,27 +1,22 @@
 package ru.numbdev.conference.handler;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.web.socket.*;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
-import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class VideoWebSocketHandler extends TextWebSocketHandler {
     private static final CopyOnWriteArrayList<WebSocketSession> sessions = new CopyOnWriteArrayList<>();
-    private final ObjectMapper objectMapper = new ObjectMapper();
+//    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) {
         sessions.add(session);
     }
 
-    static int counter = 0;
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
-        Map<String, Object> msgMap = objectMapper.readValue(message.getPayload(), Map.class);
-        System.out.println(counter + " " + message.toString());
-        counter+=1;
+//        Map<String, Object> msgMap = objectMapper.readValue(message.getPayload(), Map.class);
         for (WebSocketSession sess : sessions) {
             if (sess.isOpen() && !sess.getId().equals(session.getId())) {
                 sess.sendMessage(message);

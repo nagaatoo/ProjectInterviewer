@@ -3,9 +3,9 @@ package ru.numbdev.interviewer.page.component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.html.Div;
 
-public class VidoeComponent extends Div {
+public class VideoComponent extends Div {
 
-    public VidoeComponent(boolean isCamera) {
+    public VideoComponent(boolean isCamera) {
         Div videoDiv = new Div();
         videoDiv.setId(isCamera ? "videoDiv" : "companionDiv");
         add(videoDiv);

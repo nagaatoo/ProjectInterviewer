@@ -14,8 +14,8 @@ import java.util.List;
 public class InterviewerWebCamComponent extends HorizontalLayout {
 
     private final CameraComponent camera = null;
-    private final VidoeComponent newCamera;
-    private final VidoeComponent companionCamera;
+    private final VideoComponent newCamera;
+    private final VideoComponent companionCamera;
     private final List<Component> roommates = new ArrayList<>();
 
     private final List<ByteArrayOutputStream> streams = new ArrayList<>(); //MappedByteBuffer
@@ -36,10 +36,10 @@ public class InterviewerWebCamComponent extends HorizontalLayout {
 //        add(camera);
 //        add(candidate);
 
-        newCamera = new VidoeComponent(true);
+        newCamera = new VideoComponent(true);
         add(newCamera);
 
-        companionCamera = new VidoeComponent(false);
+        companionCamera = new VideoComponent(false);
         add(companionCamera);
     }
 
